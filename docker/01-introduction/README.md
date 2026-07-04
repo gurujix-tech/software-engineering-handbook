@@ -68,12 +68,7 @@ None of this is a code bug — it's an *environment* mismatch. Five machines, fi
 
 Docker is named after an actual industry transformation. Before the 1950s, cargo ships were loaded by hand — barrels, crates, sacks, every shape different, repacked at every port. Then the industry standardized on one thing: the **intermodal shipping container.** Fixed size, fixed shape. Any port, any crane, any truck could move it, regardless of what was inside.
 
-| Shipping World | Software World |
-|---|---|
-| Goods of every shape and size | Apps built with different languages, libraries, configs |
-| Standard shipping container | Docker container |
-| Any ship/crane/truck moves any container | Any machine with Docker can run any Docker container |
-| No repacking cargo at every port | No reconfiguring the app at every environment |
+![Shipping containers vs Docker containers: before/after standardization](../../assets/diagrams/docker/shipping-to-software.png)
 
 Your app, packed into a Docker container, runs the same way on your laptop and in production. The host machine doesn't need to know or care what's inside.
 
