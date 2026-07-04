@@ -233,24 +233,29 @@ Before containers, scaling meant provisioning more full VMs, each paying the OS 
 
 ## 🎤 Interview Questions
 
-**Beginner**
+#### Beginner
+
 1. What problem does Docker solve?
 2. What's the difference between a Docker image and a Docker container?
 
-**Intermediate**
-3. How is a container different from a VM at a mechanism level?
-4. What do namespaces and cgroups each do for a container?
+#### Intermediate
 
-**Advanced**
-5. Explain the relationship between Docker, containerd, and the OCI spec.
-6. If containers share the host kernel, what are the security implications, and how would you mitigate them?
+1. How is a container different from a VM at a mechanism level?
+2. What do namespaces and cgroups each do for a container?
 
-**Scenario-Based**
-7. A teammate says "let's just use a bigger VM instead of containers, it's simpler." How do you respond?
-8. A new engineer keeps saying "I deployed a container" when they mean they built an image. How do you correct this so it sticks?
+#### Advanced
 
-**Troubleshooting**
-9. A container that ran fine in dev crashes immediately in production with no obvious code error. What's the first category of cause you'd investigate, and why?
+1. Explain the relationship between Docker, containerd, and the OCI spec.
+2. If containers share the host kernel, what are the security implications, and how would you mitigate them?
+
+#### Scenario-Based
+
+1. A teammate says "let's just use a bigger VM instead of containers, it's simpler." How do you respond?
+2. A new engineer keeps saying "I deployed a container" when they mean they built an image. How do you correct this so it sticks?
+
+#### Troubleshooting
+
+1. A container that ran fine in dev crashes immediately in production with no obvious code error. What's the first category of cause you'd investigate, and why?
 
 ---
 
