@@ -310,9 +310,9 @@ You now have the mental model everything else in this handbook builds on:
 - ✓ Container vs VM — shared kernel + namespaces/cgroups vs a full guest OS
 - ✓ Where Docker, containerd, and Kubernetes each sit in the stack
 
-In the next chapter, we stop talking about Docker and actually install it — Docker Desktop, Docker Engine on Linux, and how to verify your setup is really working, so Module 03 can put the CLI in your hands with real containers already running.
+In the next chapter, we stop talking about Docker and start using it — a quick install/setup pass (Docker Desktop, Docker Engine on Linux, verifying your setup works), then straight into the CLI fundamentals with real containers running.
 
 ---
 
 ⬅️ **Previous:** None — this is the first chapter.
-➡️ **Next:** Docker Installation — Coming soon
+➡️ **Next:** Docker Fundamentals — Coming soon

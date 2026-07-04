@@ -80,6 +80,8 @@ Nothing gets virtualized in the VM sense — there's no second kernel and no vir
 
 Every one of those steps restricts *visibility or resource access*; none of them swap out the kernel itself. That's precisely why it's called **OS-level virtualization**, not virtualization in the hypervisor sense, and precisely why a container can never run a different kernel than its host (no Windows containers on a Linux host, no picking a different kernel version per container) — there's only ever one kernel underneath all of them.
 
+![Diagram: the 8-step kernel-level flow of docker run, from the CLI handoff through containerd and runc to clone() namespaces, pivot_root, OverlayFS, veth networking, cgroups/seccomp, and PID 1 starting](../../assets/diagrams/docker/how-docker-runs-internal.png)
+
 > 🧠 **Remember:** A container is just a regular Linux process — `clone()` with namespace flags, `pivot_root` for its filesystem, OverlayFS for layers, and cgroups for limits. There's no second kernel, ever.
 
 > 🎯 **What this tests:** Whether you actually know the concrete kernel primitives — specific `clone()` flags, `pivot_root`, OverlayFS, `veth` — rather than re-reciting "namespaces and cgroups" as a memorized pair. This is usually the deepest filter question in a platform/DevOps interview, separating people who've read about containers from people who've had to debug one at the syscall level.

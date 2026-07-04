@@ -13,9 +13,24 @@ Modules are added here only once their content is actually written and reviewed 
 | # | Module | Status |
 |---|--------|--------|
 | 01 | [Introduction to Docker](./01-introduction/README.md) | ✅ Complete |
-| 02 | Docker Installation | 🔜 Next up |
+| 02 | Docker Fundamentals (incl. install/setup) | 🔜 Next up |
+| 03 | Docker Images | ⏳ Planned |
+| 04 | Docker Containers | ⏳ Planned |
+| 05 | Dockerfile & Image Building | ⏳ Planned |
+| 06 | Docker Volumes | ⏳ Planned |
+| 07 | Docker Networking | ⏳ Planned |
+| 08 | Docker Compose | ⏳ Planned |
+| 09 | Docker Registry & Image Distribution | ⏳ Planned |
+| 10 | Docker Security | ⏳ Planned |
+| 11 | Docker Optimization | ⏳ Planned |
+| 12 | Docker Debugging | ⏳ Planned |
+| 13 | Docker Troubleshooting Guide | ⏳ Planned |
+| 14 | Production Best Practices | ⏳ Planned |
+| 15 | CI/CD with Docker | ⏳ Planned |
+| 16 | Real-World Docker Demos | ⏳ Planned |
+| 17 | Docker Cheatsheet | ⏳ Planned |
 
-More modules (Docker Fundamentals, Images, Containers, Dockerfile, Volumes, Networking, Compose, Registry, Security, Optimization, Debugging, Production Best Practices, CI/CD, Real-World Demos, Cheatsheet) will be added here one at a time as each is written.
+Modules are added to this table with real links only once they're written and reviewed — the rows above are the plan, not a promise of order (see `.planning/docker-roadmap.md` for full topic breakdowns). Interview questions aren't a separate module: every chapter keeps its own bare questions, answered in full over in [Interview Prep → Docker](../interview-prep/docker/README.md).
 
 ---
 
