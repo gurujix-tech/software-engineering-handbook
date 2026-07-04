@@ -75,12 +75,6 @@ You never walk into the kitchen yourself. You place an order, the waiter relays 
 
 ## 🖼️ Hero Illustration
 
-- **Purpose:** Give the reader one visual anchor for the client–daemon–registry relationship before any commands are introduced.
-- **Learning Objective:** Reinforce that the CLI, the daemon, and the registry are three separate components with three separate jobs.
-- **Illustration Description:** A simple top-to-bottom flow with three boxes and two arrows: "Docker CLI" → (arrow labeled "REST API over a Unix socket") → "Docker Daemon (dockerd)" → (arrow labeled "docker pull, only on a cache miss") → "Registry (Docker Hub / ECR / GHCR)". Keep it to exactly these three boxes — no disk/storage icon, no container icon — this diagram's only job is architecture, not lifecycle (that gets its own diagram below).
-- **Placement:** Directly below this section, before "The Concept."
-- **Image Generation Notes:** Flat 2D vector style, blue/cyan for the CLI and daemon, purple highlight for the registry. Bottom-right attribution: "ⓘ Vamsi Chunduru | Gurujix".
-
 ![Hero Illustration: Docker client-daemon-registry architecture](../../assets/diagrams/docker/docker-fundamentals-architecture.png)
 
 ---
@@ -109,12 +103,6 @@ docker rm     → Removed (gone)
 
 `docker run` is shorthand for `create` + `start` in one step — which is exactly why you'll rarely see `docker create` used on its own in day-to-day work.
 
-- **Purpose:** Give the reader a visual for the state machine every container moves through, independent of any specific command.
-- **Learning Objective:** A container's lifecycle has exactly four states, and every CLI command is just a transition between two of them.
-- **Illustration Description:** A horizontal state diagram: four rounded boxes — "Created," "Running," "Stopped," "Removed" — with labeled arrows between them ("start" Created→Running, "stop" Running→Stopped, "start" Stopped→Running again, "rm" Stopped→Removed). No command syntax or flags shown — just the states and the verbs that move between them.
-- **Placement:** Directly below this section.
-- **Image Generation Notes:** Flat 2D vector style, one consistent color per state box (e.g. gray "Created," green "Running," amber "Stopped," red "Removed"), arrows in neutral gray with the transition verb as the label. Bottom-right attribution: "ⓘ Vamsi Chunduru | Gurujix".
-
 ![Diagram: Docker container lifecycle state machine — created, running, stopped, removed](../../assets/diagrams/docker/docker-fundamentals-lifecycle.png)
 
 > 📦 **In Practice:** `docker run` almost always replaces `docker create` + `docker start` in real workflows — you'll mostly see `create` used standalone in scripting/automation contexts where you want to configure a container before deciding to start it.
@@ -133,12 +121,6 @@ Here's the architecture in motion — what actually happens the first time the d
 6. **The daemon starts the container's process.**
 
 > 🧠 The second time the daemon is asked for the same image, step 4 disappears entirely — it finds the layers already cached locally and jumps straight to step 5. That's why the first run of any new image is slow, and every one after it is instant — a caching behavior, not a coincidence.
-
-- **Purpose:** Show the client-daemon-registry architecture from the Hero Illustration actually executing a request end to end.
-- **Learning Objective:** A cache miss is what triggers a registry pull — a cache hit skips the registry entirely.
-- **Illustration Description:** A flow diagram starting at "CLI command" → "Daemon" → a decision diamond "Image cached locally?" → if No: arrow to "Registry" → "Pull layers" → back into "Daemon"; if Yes: arrow straight down, skipping the registry box entirely → both paths converge into a final "Create + start container" box.
-- **Placement:** Directly below the numbered steps above.
-- **Image Generation Notes:** Flat 2D vector style, the "No" path highlighted in purple to draw the eye to the registry round-trip, the "Yes" path in green as the fast path. Bottom-right attribution: "ⓘ Vamsi Chunduru | Gurujix".
 
 ![Diagram: Docker daemon image cache hit vs cache miss decision flow](../../assets/diagrams/docker/docker-fundamentals-cache-flow.png)
 
