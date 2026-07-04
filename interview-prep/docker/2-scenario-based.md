@@ -6,7 +6,33 @@ These test judgment, not recall — how you handle a real conversation with a te
 
 ---
 
-### 1. A teammate says "let's just use a bigger VM instead of containers, it's simpler." How do you respond?
+### 1. A teammate stopped a container earlier and now says "it disappeared." How do you find it?
+
+**Answer:**
+Start from the fact that `docker stop` never removes anything — it only stops the process. The container, its config, and its writable filesystem all still exist; they're just not visible in the default `docker ps`, which only lists *running* containers. The fix is simply `docker ps -a`, which lists every container regardless of state, where it'll show up with a status like `Exited (0) 10 minutes ago`.
+
+From there it can be inspected (`docker inspect <name>`), restarted (`docker start <name>`), or its last output reviewed (`docker logs <name>`) exactly as if it had never stopped — nothing about it changed except that it isn't running. The only way a container is actually gone is an explicit `docker rm`.
+
+> 🧠 **Remember:** `docker ps` only shows running containers — `docker ps -a` is what actually answers "did it disappear or just stop?"
+
+> 🎯 **What this tests:** Whether you distinguish "stopped" from "removed" — the single most common source of "where did my container go" confusion for people new to Docker.
+
+---
+
+### 2. You've run the same `docker run` command five times while debugging the same issue. What's actually on the machine now, and how do you clean it up?
+
+**Answer:**
+`docker run` never reuses a container — every single invocation creates a brand-new one, with a new container ID and its own writable layer, even against the identical image and command. So running it five times leaves five separate containers on the machine: possibly five all still running (if none used a fixed `--name`, since Docker would otherwise refuse to reuse a name still in use), or a mix of running and exited ones if some crashed and others didn't.
+
+To see the full damage: `docker ps -a` lists all of them. To clean up: `docker rm -f $(docker ps -aq --filter ancestor=<image>)` removes every container created from that image in one shot, or more surgically, stop and remove them by name/ID one at a time if some need to be kept. Going forward, the fix is prevention: always run debug containers with `--name` and `--rm` (auto-removes on exit) so repeated runs either fail loudly (name conflict) or clean up after themselves instead of quietly accumulating.
+
+> 🧠 **Remember:** `docker run` always creates a new container — five runs means five containers on disk, not one being reused. `--rm` and `--name` prevent this from accumulating silently.
+
+> 🎯 **What this tests:** Whether you understand container identity well enough to reason about actual machine state, not just what the last command did — and whether you know the practical habit (`--rm`, `--name`) that avoids the problem entirely.
+
+---
+
+### 3. A teammate says "let's just use a bigger VM instead of containers, it's simpler." How do you respond?
 
 **Answer:**
 Start by agreeing with the part that's actually true: a VM *is* conceptually simpler — fewer moving parts, a well-understood operational model, no need to learn Docker or Kubernetes. That's a legitimate point, not something to dismiss.
@@ -21,7 +47,7 @@ The right move in an interview (and in real life) is to ask a follow-up question
 
 ---
 
-### 2. During a production incident, a teammate suggests: "Let's just exec into the running container, tweak the config, and restart the process — we'll fix the Dockerfile properly later." How do you respond?
+### 4. During a production incident, a teammate suggests: "Let's just exec into the running container, tweak the config, and restart the process — we'll fix the Dockerfile properly later." How do you respond?
 
 **Answer:**
 Push back on the shortcut, but by explaining the actual failure mode, not just "we don't do that." A container's entire value proposition is that the *image* is the single source of truth — what's running is supposed to be an exact, reproducible instance of it. The moment you `exec` in and hand-edit a running container, that guarantee is gone: the fix now lives only inside that one container's writable layer, which disappears the instant it's restarted, rescheduled onto another node, or replaced during a routine rolling deploy or autoscale event — all things that happen on their own, outside your control. You end up with a fleet where some replicas silently have the fix and others don't, no audit trail of what changed, and a registry image that's now lying about what's actually running.

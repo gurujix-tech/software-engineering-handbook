@@ -310,9 +310,9 @@ You now have the mental model everything else in this handbook builds on:
 - ✓ Container vs VM — shared kernel + namespaces/cgroups vs a full guest OS
 - ✓ Where Docker, containerd, and Kubernetes each sit in the stack
 
-In the next chapter, we stop talking about Docker and start using it — a quick install/setup pass (Docker Desktop, Docker Engine on Linux, verifying your setup works), then straight into the CLI fundamentals with real containers running.
+In the next chapter, we name the architecture behind every command you'll ever type — the client, the daemon, the registry, and the container lifecycle they all drive. The commands themselves (`run`, `ps`, `logs`, `exec`, and the rest) get their own dedicated chapter right after.
 
 ---
 
 ⬅️ **Previous:** None — this is the first chapter.
-➡️ **Next:** Docker Fundamentals — Coming soon
+➡️ **Next:** [02 — Docker Fundamentals](../02-fundamentals/README.md)

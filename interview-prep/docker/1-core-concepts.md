@@ -32,7 +32,70 @@ A **container** is a running (or stopped) *instance* created from an image, with
 
 ---
 
-### 3. How is a container different from a VM at a mechanism level?
+### 3. What's the actual difference between the Docker client, the Docker daemon, and a registry — and why does that split matter?
+
+**Answer:**
+These are three separate components with three separate jobs, and conflating them is what makes "what happens when I run a command" feel like magic. The **Docker client** is the `docker` binary you type into — it does no real work itself; it parses your command into a REST API request. The **Docker daemon** (`dockerd`) is a long-running background service that receives that request over a local Unix socket (`/var/run/docker.sock` on Linux) and does the actual work: managing images, containers, networks, and volumes on disk. The **registry** (Docker Hub, AWS ECR, GHCR) is a separate storage/distribution service the daemon talks to only when it needs an image it doesn't already have cached locally.
+
+The reason this split matters practically: a "Cannot connect to the Docker daemon" error means the client is fine but `dockerd` isn't running or reachable — a service problem, not a syntax problem. And a slow `docker run` on a fresh image is the daemon reaching out to the registry, not the client doing anything slow.
+
+> 🧠 **Remember:** You never talk to Docker directly — client → daemon → (registry only if needed). Most "why is this broken" questions are really "which of these three is the problem."
+
+> 🎯 **What this tests:** Whether you can localize a fault to the right component instead of treating "Docker" as one undifferentiated black box.
+
+---
+
+### 4. What's the actual difference between an image ID and a container ID, and why do people conflate them?
+
+**Answer:**
+An **image ID** is a hash of a static, read-only blueprint — filesystem layers plus config (entrypoint, env vars, exposed ports). A **container ID** identifies one specific runtime instance created from an image, with its own writable layer, its own network namespace, and its own lifecycle state (created, running, stopped). One image can produce many container IDs, each independent of the others.
+
+People conflate them because both `docker images` and `docker ps` print similar-looking hex hashes, and because `docker run <image>` visually looks like it's "the same thing" continuing — when it actually creates a brand-new container ID every single time it's called, even against the same image.
+
+> 🧠 **Remember:** One image ID, many possible container IDs — `docker run` always mints a new container ID, it never reuses one.
+
+> 🎯 **What this tests:** Precision under real usage, not just definitions — this is the exact confusion that causes people to accidentally spin up duplicate containers while debugging.
+
+---
+
+### 5. What's the difference between `docker run`, `docker start`, and `docker exec`?
+
+**Answer:**
+`docker run` always creates a **brand-new container** from an image — new container ID, fresh writable layer — even if you run the identical command twice. `docker start` resumes an **existing, already-created** container — same ID, same filesystem state it had when it stopped, no new image lookup involved. `docker exec` doesn't touch the container's lifecycle at all — it opens an additional process *inside* an already-running container's namespaces, most commonly used to get a shell (`docker exec -it <container> sh`) into something that's already up.
+
+> 🧠 **Remember:** `run` creates, `start` resumes, `exec` visits — only `run` ever produces a new container ID.
+
+> 🎯 **What this tests:** Whether you actually understand container identity and lifecycle state, not just three command names — this is one of the most common practical mix-ups in real day-to-day Docker usage.
+
+---
+
+### 6. Why is the first `docker run` of a new image slow, and every one after it instant?
+
+**Answer:**
+The first time, the daemon checks its local image cache, finds nothing, and has to pull every layer of that image from the registry over the network before it can create the container — that network round-trip is where the time goes. Every subsequent `docker run` of the same image tag finds those layers already cached locally (Docker's layers are content-addressed, so an unchanged layer is recognized and reused rather than re-fetched), so the daemon skips the pull step entirely and jumps straight to creating the container — which is why it feels near-instant.
+
+This is also why a fleet of nodes cold-pulling the same image simultaneously during a deploy is a real, common source of slow rollouts in production — pre-pulling or warming images ahead of a release directly avoids this.
+
+> 🧠 **Remember:** Slow first run = registry pull; fast every run after = local layer cache hit. Same mechanism explains slow cluster-wide rollouts of a brand-new image.
+
+> 🎯 **What this tests:** Whether you connect the client-daemon-registry model to an observed, everyday behavior (the first-run pause) instead of treating it as an unexplained quirk.
+
+---
+
+### 7. Why does `docker rmi` sometimes fail with an "image is being used by a container" error, and how do you resolve it?
+
+**Answer:**
+The daemon tracks that every container's writable layer sits on top of specific image layers underneath it. Deleting an image that a container — even a *stopped* one — still depends on would orphan that container's filesystem, so the daemon refuses the delete rather than silently corrupting it.
+
+To resolve it: run `docker ps -a` (not just `docker ps` — the dependent container is very often stopped, not running) to find every container built from that image, remove them with `docker rm` (or `docker rm -f` if one is still running), then retry `docker rmi`. Forcing it with `docker rmi -f` without cleaning up the containers first just untags the image while its layers stay on disk, invisibly, until those containers are removed anyway — it doesn't actually solve the dependency, it just hides it.
+
+> 🧠 **Remember:** `docker rmi` failing means a container — often a stopped one you forgot about — still depends on that image. Find it with `docker ps -a`, remove it, then retry.
+
+> 🎯 **What this tests:** Whether you understand the image/container dependency at the layer level, or just memorize `-f` as a way to force past any error without understanding what it's actually bypassing.
+
+---
+
+### 8. How is a container different from a VM at a mechanism level?
 
 **Answer:**
 A **VM** runs on a hypervisor that virtualizes hardware. Each VM boots its own full guest operating system — its own kernel, its own memory footprint, its own boot sequence — on top of that virtual hardware. This gives strong isolation, but it's heavy: gigabytes per image, seconds to minutes to boot.
@@ -50,7 +113,7 @@ Because there's no separate OS to boot, containers start in milliseconds and ima
 
 ---
 
-### 4. What do namespaces and cgroups each do for a container?
+### 9. What do namespaces and cgroups each do for a container?
 
 **Answer:**
 Split them cleanly — they solve two different problems:
@@ -64,7 +127,7 @@ Split them cleanly — they solve two different problems:
 
 ---
 
-### 5. Walk through what actually happens at the Linux kernel level when you run `docker run` — how does a container end up feeling like its own isolated machine?
+### 10. Walk through what actually happens at the Linux kernel level when you run `docker run` — how does a container end up feeling like its own isolated machine?
 
 **Answer:**
 Nothing gets virtualized in the VM sense — there's no second kernel and no virtual hardware. A container ends up as a completely ordinary Linux process, just started with a deliberately restricted *view* of the one real kernel already running. Here's the flow, in order:
@@ -88,7 +151,7 @@ Every one of those steps restricts *visibility or resource access*; none of them
 
 ---
 
-### 6. Explain the relationship between Docker, containerd, and the OCI spec.
+### 11. Explain the relationship between Docker, containerd, and the OCI spec.
 
 **Answer:**
 It's a layered stack, not competing tools:
@@ -105,7 +168,7 @@ Chained together: **Docker → containerd → runc → Linux kernel primitives (
 
 ---
 
-### 7. If containers share the host kernel, what are the security implications, and how would you mitigate them?
+### 12. If containers share the host kernel, what are the security implications, and how would you mitigate them?
 
 **Answer:**
 Because every container on a host shares one kernel, the isolation boundary is fundamentally weaker than a VM's:

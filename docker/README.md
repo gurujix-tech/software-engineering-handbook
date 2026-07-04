@@ -8,29 +8,47 @@ Modules are added here only once their content is actually written and reviewed 
 
 ---
 
+## ✅ Prerequisites
+
+Install steps go stale fastest and the official docs already cover them precisely, so this is intentionally a checklist, not a chapter:
+
+- Install **Docker Desktop** (macOS/Windows) or **Docker Engine** (Linux/EC2) — see the [official install docs](https://docs.docker.com/engine/install/).
+- Verify it worked:
+
+```bash
+docker version
+docker info
+docker run hello-world
+```
+
+If `hello-world` runs successfully, you're ready for [01 — Introduction to Docker](./01-introduction/README.md).
+
+---
+
 ## 📖 Learning Path
 
 | # | Module | Status |
 |---|--------|--------|
 | 01 | [Introduction to Docker](./01-introduction/README.md) | ✅ Complete |
-| 02 | Docker Fundamentals (incl. install/setup) | 🔜 Next up |
-| 03 | Docker Images | ⏳ Planned |
-| 04 | Docker Containers | ⏳ Planned |
-| 05 | Dockerfile & Image Building | ⏳ Planned |
-| 06 | Docker Volumes | ⏳ Planned |
-| 07 | Docker Networking | ⏳ Planned |
-| 08 | Docker Compose | ⏳ Planned |
-| 09 | Docker Registry & Image Distribution | ⏳ Planned |
-| 10 | Docker Security | ⏳ Planned |
-| 11 | Docker Optimization | ⏳ Planned |
-| 12 | Docker Debugging | ⏳ Planned |
-| 13 | Docker Troubleshooting Guide | ⏳ Planned |
-| 14 | Production Best Practices | ⏳ Planned |
-| 15 | CI/CD with Docker | ⏳ Planned |
-| 16 | Real-World Docker Demos | ⏳ Planned |
-| 17 | Docker Cheatsheet | ⏳ Planned |
+| 02 | [Docker Fundamentals](./02-fundamentals/README.md) | ✅ Complete |
+| 03 | [Docker CLI](./03-docker-cli/README.md) | ✅ Complete |
+| 04 | Docker Images | 🔜 Next up |
+| 05 | Docker Containers | ⏳ Planned |
+| 06 | Dockerfile & Image Building | ⏳ Planned |
+| 07 | Docker Volumes | ⏳ Planned |
+| 08 | Docker Networking | ⏳ Planned |
+| 09 | Docker Compose | ⏳ Planned |
+| 10 | Docker Registry & Image Distribution | ⏳ Planned |
+| 11 | Docker Security | ⏳ Planned |
+| 12 | Docker Optimization | ⏳ Planned |
+| 13 | Docker Debugging | ⏳ Planned |
+| 14 | Docker Troubleshooting Guide | ⏳ Planned |
+| 15 | Production Best Practices | ⏳ Planned |
+| 16 | CI/CD with Docker | ⏳ Planned |
+| 17 | Real-World Docker Demos | ⏳ Planned |
+| 18 | Docker Cheatsheet | ⏳ Planned |
 
-Modules are added to this table with real links only once they're written and reviewed — the rows above are the plan, not a promise of order (see `.planning/docker-roadmap.md` for full topic breakdowns). Interview questions aren't a separate module: every chapter keeps its own bare questions, answered in full over in [Interview Prep → Docker](../interview-prep/docker/README.md).
+Modules are added to this table with real links only once they're written and reviewed — the rows above are the plan, not a promise of order. Interview questions aren't a separate module: every chapter keeps its own bare questions, answered in full over in [Interview Prep → Docker](../interview-prep/docker/README.md).
 
 ---
 

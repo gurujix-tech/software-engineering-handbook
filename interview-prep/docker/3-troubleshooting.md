@@ -6,7 +6,41 @@ These test how you actually debug — not the theory, the triage process.
 
 ---
 
-### 1. A container that ran fine in dev crashes immediately in production with no obvious code error. What's the first category of cause you'd investigate, and why?
+### 1. `docker run` fails with "Cannot connect to the Docker daemon." What do you check, in order?
+
+**Answer:**
+This error means the client parsed your command fine — the failure is entirely on the daemon side, so the debugging path is a service-health check, not a Docker-syntax check. In order:
+
+1. **Is the daemon actually running?** `systemctl status docker` (Linux). If it's not active, start it (`systemctl start docker`) and check `journalctl -u docker` for why it isn't — a corrupted state directory or a config error are the common causes of it refusing to start.
+2. **Do you have permission to reach the socket?** The daemon listens on `/var/run/docker.sock`, owned by root and the `docker` group. If your user isn't in that group, every command fails with this exact error even though the daemon is perfectly healthy — `sudo usermod -aG docker $USER` (then re-login) is the fix, not reinstalling Docker.
+3. **Is `DOCKER_HOST` pointed somewhere unreachable?** If that environment variable is set (common after working with a remote daemon or a VM-based setup), the client is trying to reach a different host or socket entirely than the one actually running locally.
+4. **Disk or resource exhaustion.** A full disk can cause the daemon to become unresponsive or crash outright — `df -h` on the daemon's data root is worth a quick check before assuming it's a config problem.
+
+> 🧠 **Remember:** "Cannot connect to the daemon" is a service/permissions problem, not a command-syntax problem — start with `systemctl status docker` and socket group membership before anything else.
+
+> 🎯 **What this tests:** Whether you know this error means the *client* is fine and localize the fault correctly, instead of re-typing the same command hoping it resolves itself.
+
+---
+
+### 2. A container shows as `Exited` immediately after starting. What's your triage sequence?
+
+**Answer:**
+Work outward from the container itself before assuming anything about the environment:
+
+1. **`docker ps -a`** — confirm it actually exited (rather than never having started) and note the exit code shown next to its status.
+2. **Read the exit code first.** `0` means the main process finished and returned cleanly — often because the image's default command wasn't actually a long-running process (a classic first-timer mistake, not a bug). `137` means it was killed, most often an out-of-memory kill. `1` or other non-zero codes point to an application-level failure.
+3. **`docker logs <container>`** — this alone explains the majority of immediate exits: a missing config value, a stack trace, a bind-address conflict.
+4. **`docker inspect <container>`** — check the configured `Cmd`/`Entrypoint`, mounted volumes, and environment variables actually applied, in case the container never had what it needed to begin with.
+
+This general sequence is the entry point; the next question goes deeper into the specific *categories* of root cause once you've reached this point and still need to explain *why*.
+
+> 🧠 **Remember:** `docker ps -a` for the exit code, `docker logs` for the reason, `docker inspect` for the configuration — in that order, before touching the application code.
+
+> 🎯 **What this tests:** Whether you have a repeatable, ordered triage habit for the single most common Docker support question, rather than jumping straight to guessing.
+
+---
+
+### 3. A container that ran fine in dev crashes immediately in production with no obvious code error. What's the first category of cause you'd investigate, and why?
 
 **Answer:**
 Before touching code, check the actual crash reason and exit code — `docker logs` / `kubectl logs`, plus `docker inspect` or `kubectl describe pod` for the exit code. That single number already narrows the search: `137` means the container was killed (commonly an out-of-memory kill under a cgroup limit), `143` means it received `SIGTERM`, and a plain `1` usually points back to an application-level error.
