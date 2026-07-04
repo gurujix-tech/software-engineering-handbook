@@ -1,0 +1,5 @@
+.planning/
+.planning/*
+.guides/
+.guides/*
+*.DS_Store
