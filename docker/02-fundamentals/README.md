@@ -73,9 +73,9 @@ You never walk into the kitchen yourself. You place an order, the waiter relays 
 
 ---
 
-## 🖼️ Hero Illustration
+## 🖼️ The Architecture at a Glance
 
-![Hero Illustration: Docker client-daemon-registry architecture](../../assets/diagrams/docker/docker-fundamentals-architecture.png)
+![Docker client-daemon-registry architecture](../../assets/diagrams/docker/docker-fundamentals-architecture.png)
 
 ---
 
@@ -103,7 +103,7 @@ docker rm     → Removed (gone)
 
 `docker run` is shorthand for `create` + `start` in one step — which is exactly why you'll rarely see `docker create` used on its own in day-to-day work.
 
-![Diagram: Docker container lifecycle state machine — created, running, stopped, removed](../../assets/diagrams/docker/docker-fundamentals-lifecycle.png)
+![Docker container lifecycle state machine — created, running, stopped, removed](../../assets/diagrams/docker/docker-fundamentals-lifecycle.png)
 
 > 📦 **In Practice:** `docker run` almost always replaces `docker create` + `docker start` in real workflows — you'll mostly see `create` used standalone in scripting/automation contexts where you want to configure a container before deciding to start it.
 
@@ -122,7 +122,7 @@ Here's the architecture in motion — what actually happens the first time the d
 
 > 🧠 The second time the daemon is asked for the same image, step 4 disappears entirely — it finds the layers already cached locally and jumps straight to step 5. That's why the first run of any new image is slow, and every one after it is instant — a caching behavior, not a coincidence.
 
-![Diagram: Docker daemon image cache hit vs cache miss decision flow](../../assets/diagrams/docker/docker-fundamentals-cache-flow.png)
+![Docker daemon image cache hit vs cache miss decision flow](../../assets/diagrams/docker/docker-fundamentals-cache-flow.png)
 
 ---
 
