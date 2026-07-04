@@ -89,23 +89,7 @@ One image can produce many running containers, the same way one container design
 
 ---
 
-## ❓ The 5W + 1H
-
-**What:** A platform for packaging and running apps in lightweight, isolated containers, sharing the host's kernel instead of bundling a full guest OS.
-
-**Why:** To eliminate "works on my machine," and to run many isolated apps far cheaper than many VMs.
-
-**Who:** Backend engineers, DevOps/platform engineers, QA reproducing bugs, and increasingly data scientists packaging models.
-
-**When to use:** Anytime an app needs to run identically across environments, for microservices needing isolated dependencies, or before deploying to Kubernetes.
-
-**When to think twice:** Trivial single-machine scripts with no deployment target, or workloads needing a hard OS-level security boundary (VMs, or containers inside VMs, are the safer call there).
-
-**How:** Using two Linux kernel features — **namespaces** (isolated view of process/network/filesystem) and **cgroups** (limits on CPU/memory/I/O). Docker didn't invent isolation; it made it easy to use and distribute.
-
----
-
-## 🏗 Architecture: Image vs Container
+## 📦 Image vs Container
 
 An **image** is a static, read-only blueprint — it never runs by itself. A **container** is a running (or stopped) instance created *from* an image, with its own writable layer, process, and lifecycle. One image, many independent containers — same design, many separate boxes.
 
@@ -156,7 +140,7 @@ The same image, on any machine with Docker, produces the same result — no OS m
 
 ---
 
-## ⚙️ How It Works: VM vs Container
+## 🖥️ Virtual Machines vs Containers
 
 A VM boots its own kernel and full guest OS per instance — strong isolation, heavy cost. A container shares the host's kernel; namespaces/cgroups make it *feel* isolated, without booting a separate OS. That's why containers start in milliseconds and images are megabytes, not gigabytes.
 
@@ -185,7 +169,7 @@ A VM boots its own kernel and full guest OS per instance — strong isolation, h
 
 ---
 
-## 🧩 Where Docker Fits: containerd and Kubernetes
+## 🧩 Docker, containerd & Kubernetes
 
 Three tools, three layers — not competitors:
 
@@ -217,6 +201,15 @@ This portability works because Docker, containerd, and Kubernetes all agree on a
 - One container, **one responsibility** — not a mini VM running five background services.
 - Get the vocabulary right early: image vs container, runtime vs platform vs orchestrator. Confusion here compounds later in Kubernetes and CI/CD docs.
 
+**When should you use Docker?**
+- An app needs to run identically across your laptop, staging, and production
+- You're building microservices that each need their own isolated dependencies
+- You're deploying to Kubernetes — containers are the unit it orchestrates
+
+**When should you not?**
+- A trivial, single-machine script with no deployment target — you'd be adding packaging overhead for nothing
+- A workload that needs a hard OS-level security boundary — a VM (or containers running inside one) is the safer call there
+
 ---
 
 ## 🚫 Common Mistakes
@@ -229,6 +222,12 @@ This portability works because Docker, containerd, and Kubernetes all agree on a
 ## 🏢 Production Perspective
 
 Before containers, scaling meant provisioning more full VMs, each paying the OS tax. With containers, the same hardware runs far more services, because there's no per-service OS overhead — the image itself becomes the portable unit of truth across environments. More on this in the Production Best Practices and CI/CD with Docker chapters.
+
+**Who uses Docker?**
+- **Software Engineers** — packaging apps so they run identically everywhere
+- **DevOps / Platform Engineers** — building the images and pipelines that ship those apps
+- **QA Teams** — reproducing bugs in the exact environment they occurred in
+- **Data Scientists** — increasingly packaging models and their dependencies the same way
 
 ---
 
