@@ -15,6 +15,8 @@ Then reframe it as a trade-off question rather than a right/wrong one. A bigger 
 
 The right move in an interview (and in real life) is to ask a follow-up question instead of arguing: *"What are we actually trying to avoid — complexity, or losing isolation between services?"* If it's a genuinely small, single-team, low-scale system with no need to scale services independently, one or two well-managed VMs might really be the pragmatic choice — Docker isn't a mandatory default. But if there's any expectation of scaling multiple services independently, deploying frequently, or running in a shared cluster, containers give a far better cost-to-isolation ratio.
 
+> 🧠 **Remember:** Don't defend containers on reflex — ask what they're actually trying to avoid: complexity, or lost isolation.
+
 > 🎯 **What this tests:** Whether you're dogmatic ("containers are always better") or you reason from trade-offs and ask the right clarifying question first. Interviewers are listening for judgment, not a rehearsed pro-container speech.
 
 ---
@@ -25,5 +27,7 @@ The right move in an interview (and in real life) is to ask a follow-up question
 Push back on the shortcut, but by explaining the actual failure mode, not just "we don't do that." A container's entire value proposition is that the *image* is the single source of truth — what's running is supposed to be an exact, reproducible instance of it. The moment you `exec` in and hand-edit a running container, that guarantee is gone: the fix now lives only inside that one container's writable layer, which disappears the instant it's restarted, rescheduled onto another node, or replaced during a routine rolling deploy or autoscale event — all things that happen on their own, outside your control. You end up with a fleet where some replicas silently have the fix and others don't, no audit trail of what changed, and a registry image that's now lying about what's actually running.
 
 The right move under pressure is still to fix it through the image: patch the source, rebuild, push, redeploy. If the real objection is speed, that's a pipeline problem to solve — a fast-tracked emergency deploy path — not a reason to bypass the image. The one legitimate exception worth naming: `exec`-ing in *read-only*, purely to inspect logs or state to diagnose the problem faster, is fine. The line is diagnosis versus mutation, not "never touch a running container."
+
+> 🧠 **Remember:** Fix the image, not the running container — anything patched live in the writable layer disappears on the next restart or reschedule.
 
 > 🎯 **What this tests:** Whether you hold the immutable-infrastructure principle under real incident pressure, or cave to "just this once." A weak answer either agrees to the shortcut or refuses without explaining *why* the fix would vanish — a strong answer names the concrete failure mode and still offers a path to move fast safely.

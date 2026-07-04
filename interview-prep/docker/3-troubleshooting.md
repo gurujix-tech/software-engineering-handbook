@@ -21,4 +21,6 @@ With that in hand, the categories to check, roughly in the order they cause this
 
 In practice, the first two — missing config/secrets and OOM kills from resource limits — account for the large majority of "crashes instantly in prod, no code error" incidents, so that's where a senior engineer looks before assuming the code itself is wrong.
 
+> 🧠 **Remember:** Start from the exit code, not the code — 137 means OOM-killed, 143 means SIGTERM, and most "works in dev, dies in prod" bugs are missing config or a resource limit, not an application bug.
+
 > 🎯 **What this tests:** Whether you have an actual triage process (start from the exit code, work outward) instead of guessing at causes. Interviewers are also listening for whether you'd jump straight to blaming the code — a weaker answer starts there instead of ruling out environment differences first.

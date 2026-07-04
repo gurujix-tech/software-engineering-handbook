@@ -13,6 +13,8 @@ Docker solves *environment inconsistency* — the "works on my machine" problem.
 
 Docker packages the app together with its entire runtime environment — code, runtime, dependencies, config — into a single portable unit (an **image**) that behaves identically wherever it runs. It replaced two older approaches: detailed manual setup docs (fragile — one skipped step breaks everything) and full Virtual Machines (isolate well, but each one boots a full guest OS, paying real cost in memory, disk, and boot time). Docker gets VM-like isolation using two Linux kernel features — namespaces and cgroups — without the overhead of a separate OS per app.
 
+> 🧠 **Remember:** Docker doesn't solve deployment — it solves environment consistency.
+
 > 🎯 **What this tests:** Whether you understand *why* Docker exists, not just "it's containers." A strong answer connects environment consistency to the cost/isolation trade-off against VMs — not just "it's lightweight."
 
 ---
@@ -23,6 +25,8 @@ Docker packages the app together with its entire runtime environment — code, r
 An **image** is a static, read-only blueprint — filesystem layers plus metadata (entrypoint, environment variables, exposed ports) built from a Dockerfile. It never runs by itself; it just sits in storage (locally or in a registry).
 
 A **container** is a running (or stopped) *instance* created from an image, with its own writable layer on top, its own process, its own network namespace, and its own lifecycle. One image can produce many independent, simultaneously running containers — the same way one class definition produces many object instances.
+
+> 🧠 **Remember:** One image, many containers — same relationship as a class and its objects.
 
 > 🎯 **What this tests:** Precision. This is the single most common terminology mix-up in real teams — people say "I deployed a container" when they actually built and pushed an image. Interviewers use this question to see if you're exact with the vocabulary.
 
@@ -40,6 +44,8 @@ A **container** has no hypervisor and no guest kernel. It shares the host's kern
 
 Because there's no separate OS to boot, containers start in milliseconds and images are typically megabytes, not gigabytes.
 
+> 🧠 **Remember:** No hypervisor, no guest kernel — containers virtualize the OS, VMs virtualize the hardware.
+
 > 🎯 **What this tests:** Mechanism-level understanding. "Containers are lighter" is not a complete answer — naming namespaces and cgroups specifically is what separates a memorized answer from real understanding.
 
 ---
@@ -52,7 +58,7 @@ Split them cleanly — they solve two different problems:
 - **Namespaces control visibility.** Each namespace type isolates one dimension of what a process can see: PID (its own process tree), network (its own interfaces/ports), mount (its own filesystem view), UTS (its own hostname), IPC, and user (its own UID/GID mapping). Together, they make a container believe it's on its own machine.
 - **Cgroups (control groups) control consumption.** They cap and account for CPU shares, memory limits, and block I/O per container, and can throttle or OOM-kill a container that exceeds its budget. This is what prevents a "noisy neighbor" container from starving everything else on the host.
 
-One-liner to remember it by: **namespaces decide what a container can see, cgroups decide what it can use.**
+> 🧠 **Remember:** Namespaces decide what a container can see, cgroups decide what it can use.
 
 > 🎯 **What this tests:** Depth beyond buzzwords — can you name concrete namespace types and explain what cgroups actually enforce, not just recite the two words.
 
@@ -61,17 +67,20 @@ One-liner to remember it by: **namespaces decide what a container can see, cgrou
 ### 5. Walk through what actually happens at the Linux kernel level when you run `docker run` — how does a container end up feeling like its own isolated machine?
 
 **Answer:**
-Nothing gets virtualized in the VM sense — there's no second kernel and no virtual hardware. What actually happens is that the runtime (`runc`, under containerd) starts a normal Linux process using the `clone()` syscall, but passes it a set of namespace flags (`CLONE_NEWPID`, `CLONE_NEWNET`, `CLONE_NEWNS`, `CLONE_NEWUTS`, `CLONE_NEWIPC`, `CLONE_NEWUSER`, `CLONE_NEWCGROUP`) so the process is born already isolated across seven different dimensions — its own process tree, network stack, mounts, hostname, IPC, user/group mapping, and cgroup view — instead of sharing the host's.
+Nothing gets virtualized in the VM sense — there's no second kernel and no virtual hardware. A container ends up as a completely ordinary Linux process, just started with a deliberately restricted *view* of the one real kernel already running. Here's the flow, in order:
 
-Three concrete mechanisms make that isolation feel like a full machine:
+1. **Docker hands off the request.** The CLI passes `docker run` to the Docker daemon, which delegates the actual work to containerd.
+2. **containerd manages the lifecycle.** It pulls the image if it isn't cached locally, then hands container creation to the low-level runtime, `runc`.
+3. **`runc` calls `clone()` with namespace flags.** Flags like `CLONE_NEWPID`, `CLONE_NEWNET`, `CLONE_NEWNS`, `CLONE_NEWUTS`, `CLONE_NEWIPC`, `CLONE_NEWUSER`, `CLONE_NEWCGROUP` mean the process is born already isolated across seven dimensions — its own process tree, network stack, mounts, hostname, IPC, user/group mapping, and cgroup view.
+4. **`pivot_root` swaps the filesystem.** The process's `/` is switched to the image's unpacked filesystem — the modern, safer version of `chroot`. Same kernel binary, entirely different filesystem view.
+5. **OverlayFS mounts the image layers.** The image's read-only layers (`lowerdir`) stack under the container's writable layer (`upperdir`) into one merged view, so hundreds of containers can share the same base layers on disk via copy-on-write instead of duplicating them.
+6. **A `veth` pair wires up networking.** A virtual ethernet pair connects the container's new network namespace to a bridge on the host (`docker0` by default) — its own IP, still routed through the host.
+7. **cgroups and seccomp lock it down.** The process is placed into a cgroup that caps its CPU/memory/IO, and seccomp/capabilities filtering restricts which syscalls and privileges it can use at all — layered on top of the namespaces, not replacing them.
+8. **The process starts** — as its own PID 1, believing it's alone on the machine.
 
-- **Root filesystem swap** — the runtime uses `pivot_root` (the modern, safer version of `chroot`) to switch the new process's `/` to the image's unpacked filesystem. The process now sees an entirely different filesystem than the host, even though it's running on the exact same kernel binary.
-- **Union filesystem (OverlayFS)** — the image's read-only layers (`lowerdir`) are stacked under the container's writable layer (`upperdir`) into one merged view. This is what lets hundreds of containers share the same base image layers on disk via copy-on-write, instead of each duplicating the full filesystem.
-- **Networking via `veth` pairs** — a virtual ethernet pair connects the container's new network namespace to a bridge on the host (`docker0` by default), which is what gives the container its own IP and interfaces that still route through the host.
+Every one of those steps restricts *visibility or resource access*; none of them swap out the kernel itself. That's precisely why it's called **OS-level virtualization**, not virtualization in the hypervisor sense, and precisely why a container can never run a different kernel than its host (no Windows containers on a Linux host, no picking a different kernel version per container) — there's only ever one kernel underneath all of them.
 
-The process is then placed into a cgroup that enforces its resource ceiling, and — layered on top of namespaces, not replacing them — seccomp/capabilities filtering restricts which syscalls and privileges it's allowed to use at all.
-
-The net result: a container is a completely ordinary Linux process, just started with a deliberately restricted *view* of the one real kernel already running — different filesystem root, different PID tree, different network stack, different resource ceiling. That's precisely why it's called **OS-level virtualization**, not virtualization in the hypervisor sense, and precisely why a container can never run a different kernel than its host (no Windows containers on a Linux host, no picking a different Linux kernel version per container) — there's only ever one kernel underneath all of them.
+> 🧠 **Remember:** A container is just a regular Linux process — `clone()` with namespace flags, `pivot_root` for its filesystem, OverlayFS for layers, and cgroups for limits. There's no second kernel, ever.
 
 > 🎯 **What this tests:** Whether you actually know the concrete kernel primitives — specific `clone()` flags, `pivot_root`, OverlayFS, `veth` — rather than re-reciting "namespaces and cgroups" as a memorized pair. This is usually the deepest filter question in a platform/DevOps interview, separating people who've read about containers from people who've had to debug one at the syscall level.
 
@@ -87,6 +96,8 @@ It's a layered stack, not competing tools:
 - **OCI (Open Container Initiative)** isn't a runtime — it's a specification. It defines the image format (OCI Image Spec) and the runtime contract (OCI Runtime Spec, implemented in practice by `runc`), so any OCI-compliant image runs on any OCI-compliant runtime.
 
 Chained together: **Docker → containerd → runc → Linux kernel primitives (namespaces/cgroups)**, with OCI as the vendor-neutral contract every layer agrees to. That's exactly why an image built by Docker also runs directly under containerd or Kubernetes with no Docker installed on the node.
+
+> 🧠 **Remember:** Docker → containerd → runc → kernel — OCI is the shared contract that keeps every layer swappable.
 
 > 🎯 **What this tests:** Architectural understanding — this is a favorite at intermediate/senior DevOps interviews, especially framed as "why did Kubernetes remove dockershim in 1.24, and why did nothing actually break?"
 
@@ -110,5 +121,7 @@ Because every container on a host shares one kernel, the isolation boundary is f
 - Apply seccomp, AppArmor, or SELinux profiles to restrict available syscalls.
 - For genuinely untrusted or multi-tenant workloads, add a stronger isolation layer: run containers inside VMs (the default on most managed cloud platforms already), or use a sandboxed runtime like **gVisor** or **Kata Containers**, which interpose an extra isolation layer between the container and the host kernel.
 - Keep the host kernel and container runtime patched — most breakout CVEs get fixed quickly, but only if you're actually applying updates.
+
+> 🧠 **Remember:** One shared kernel means one shared attack surface — drop capabilities, skip `--privileged`, and reach for gVisor/Kata for untrusted workloads.
 
 > 🎯 **What this tests:** Security maturity. A weak answer stops at "don't run privileged containers." A strong senior-level answer gives a layered mitigation strategy and knows when to reach for gVisor/Kata for genuinely untrusted workloads.
