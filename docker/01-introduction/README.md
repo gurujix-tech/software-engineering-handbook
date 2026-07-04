@@ -247,15 +247,18 @@ Before containers, scaling meant provisioning more full VMs, each paying the OS 
 
 1. Explain the relationship between Docker, containerd, and the OCI spec.
 2. If containers share the host kernel, what are the security implications, and how would you mitigate them?
+3. Walk through what actually happens at the Linux kernel level when you run `docker run` — how does a container end up feeling like its own isolated machine?
 
 #### Scenario-Based
 
 1. A teammate says "let's just use a bigger VM instead of containers, it's simpler." How do you respond?
-2. A new engineer keeps saying "I deployed a container" when they mean they built an image. How do you correct this so it sticks?
+2. During a production incident, a teammate suggests exec-ing into the running container to patch it directly instead of rebuilding the image. How do you respond?
 
 #### Troubleshooting
 
 1. A container that ran fine in dev crashes immediately in production with no obvious code error. What's the first category of cause you'd investigate, and why?
+
+> 📦 **In Practice:** Try answering these on your own first. Full, interview-ready answers to every question above — plus a Production category covering security, secrets, and observability — live in the [Docker Interview Prep bank](../../interview-prep/docker/README.md).
 
 ---
 

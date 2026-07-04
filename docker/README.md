@@ -15,10 +15,12 @@ Modules are added here only once their content is actually written and reviewed 
 | 01 | [Introduction to Docker](./01-introduction/README.md) | ✅ Complete |
 | 02 | Docker Installation | 🔜 Next up |
 
-More modules (Docker Fundamentals, Images, Containers, Dockerfile, Volumes, Networking, Compose, Registry, Security, Optimization, Debugging, Production Best Practices, CI/CD, Real-World Demos, Interview Prep, Cheatsheet) will be added here one at a time as each is written.
+More modules (Docker Fundamentals, Images, Containers, Dockerfile, Volumes, Networking, Compose, Registry, Security, Optimization, Debugging, Production Best Practices, CI/CD, Real-World Demos, Cheatsheet) will be added here one at a time as each is written.
 
 ---
 
 ## 🎯 What Each Module Covers
 
 Every module in this section follows the same standard: the problem before the solution, a real-life analogy, internal working explained (not just commands), production best practices, common mistakes, and interview questions across beginner to advanced levels.
+
+Full, answered versions of every module's interview questions live in [Interview Prep → Docker](../interview-prep/docker/README.md) — the chapters themselves keep just the questions, for self-testing before you check the answers.

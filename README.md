@@ -2,7 +2,8 @@
 
 > A practical handbook for mastering modern software engineering through hands-on learning, real-world examples, and production best practices.
 
-![License](https://img.shields.io/badge/license-MIT-blue)
+![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
+![Code License](https://img.shields.io/badge/code%20license-MIT-blue)
 ![Build in Public](https://img.shields.io/badge/building--in--public-yes-orange)
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen)
@@ -261,6 +262,7 @@ software-engineering-handbook/
 ├── linux/
 ├── networking/
 ├── docker/
+├── interview-prep/
 ├── git/
 ├── github/
 ├── aws/
@@ -290,6 +292,8 @@ Each topic aims to include:
 - 🚨 Common mistakes & troubleshooting
 - 🎯 Interview questions
 - 📚 Useful references
+
+Full, answered interview questions for every topic are collected separately in [`interview-prep/`](./interview-prep/README.md) — a standalone prep reference, organized by topic and question type.
 
 ---
 
@@ -330,4 +334,9 @@ Contributions, suggestions, discussions, and feedback are always welcome.
 
 # 📜 License
 
-This project is licensed under the **MIT License**.
+This project uses two licenses, split by content type:
+
+- **Written content** (chapters, explanations, diagrams, illustrations, interview-prep Q&A) is licensed under **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)**. You're free to share and adapt it — translate it, build your own study notes on top of it — as long as you credit the source, keep it non-commercial, and license any derivative the same way. See [LICENSE](./LICENSE).
+- **Code snippets** embedded in the chapters (Dockerfiles, Terraform, Python, YAML, shell commands, CI/CD configs) are separately licensed under the **MIT License**, so you can freely reuse them in your own projects — commercial included. See [LICENSE-CODE](./LICENSE-CODE).
+
+In short: don't sell or paywall the handbook's writing and explanations, but the code examples are yours to use however you like.

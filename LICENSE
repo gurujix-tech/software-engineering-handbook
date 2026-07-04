@@ -1,0 +1,49 @@
+Software Engineering Handbook
+Copyright (c) Vamsi Chunduru
+
+This repository uses two licenses, split by content type:
+
+1. Written content (chapters, explanations, diagrams, illustrations, interview-prep Q&A) —
+   licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+   (CC BY-NC-SA 4.0).
+
+2. Code snippets and example scripts embedded in the chapters (Dockerfiles, Terraform,
+   Python, YAML, shell commands, etc.) — licensed under the MIT License. See LICENSE-CODE.
+
+---
+
+## 1. Written Content — CC BY-NC-SA 4.0
+
+Human-readable summary (not a substitute for the full license):
+
+You are free to:
+  - Share — copy and redistribute this material in any medium or format
+  - Adapt — remix, transform, and build upon the material (e.g. translate a chapter,
+    write your own study notes based on it)
+
+Under the following terms:
+  - Attribution — You must give appropriate credit to Vamsi Chunduru, provide a link to
+    this repository, and indicate if changes were made.
+  - NonCommercial — You may not use the material for commercial purposes. This includes,
+    without limitation: selling it, paywalling it, bundling it into a paid course or
+    bootcamp, or otherwise monetizing the content or a derivative of it.
+  - ShareAlike — If you remix, transform, or build upon the material, you must distribute
+    your contributions under the same CC BY-NC-SA 4.0 license.
+  - No additional restrictions — You may not apply legal terms or technological measures
+    that legally restrict others from doing anything the license permits.
+
+Full legal code: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+License deed (summary): https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+---
+
+## 2. Code Snippets — MIT License
+
+Code samples embedded in the chapters and interview-prep files (anything inside a fenced
+code block intended to be run — Dockerfiles, Terraform HCL, Python, YAML, Bash commands,
+CI/CD configs, etc.) are additionally licensed under the MIT License, so they may be freely
+reused, modified, and included in commercial projects. See LICENSE-CODE for the full text.
+
+Where it is ambiguous whether something is "code" or "written content" (e.g. an annotated,
+narrative code walkthrough), the CC BY-NC-SA 4.0 terms govern the surrounding prose and
+explanation, while the runnable code itself remains MIT.
