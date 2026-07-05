@@ -109,7 +109,9 @@ The signal reaches the **CPU** (Central Processing Unit) — the component that 
 
 > 💡 **Key Insight:** The CPU is a general-purpose decision-maker — it doesn't have built-in knowledge of "keyboards" or "screens." It only executes instructions, one after another, extremely fast. Everything it "knows" about your keyboard comes from software telling it what to do.
 
-No illustration needed here — the CPU's job in this chapter is simple enough to say in one sentence: it decides. The CPU deserves its own dedicated chapter later, with real illustrations of registers, instruction cycles, and cores — this chapter only needs you to know *that* it decides, not *how*.
+![Step 3 — Making the Decision: the CPU receives the scan code, looks up what it means via software, decides what should happen, and sends the character and data onward to RAM](../../../assets/diagrams/computer-science-fundamentals/computer-systems/cpu-flow.png)
+
+The CPU's job in this chapter is simple enough to say in one sentence: it decides. This diagram is just the shallow end of that — the CPU deserves its own dedicated chapter later, with real illustrations of registers, instruction cycles, and cores — this chapter only needs you to know *that* it decides, not the full *how*.
 
 ---
 
@@ -119,7 +121,9 @@ No illustration needed here — the CPU's job in this chapter is simple enough t
 
 The CPU can hold only a very small amount of information internally, so it constantly relies on RAM as its working area. While it's working — converting that scan code into the character "A," tracking what application is focused, deciding where the letter should be drawn — it needs a fast place to temporarily hold all of that information. That place is **RAM** (Random Access Memory): a large, fast, temporary workspace. RAM forgets everything the instant the computer loses power, which is exactly why it's fast — it trades permanence for speed.
 
-No illustration here either — RAM is abstract at this level of detail, and a rushed diagram would teach less than the paragraph above already does. RAM earns a real, detailed illustration in its own future Memory & Storage chapter.
+![Step 4 — Working Memory: RAM as the CPU's fast, temporary workspace — holding the character, the focused application, cursor position, and screen buffer while the CPU is actively working, all lost the instant power is off](../../../assets/diagrams/computer-science-fundamentals/computer-systems/ram-flow.png)
+
+RAM earns a deeper, more detailed illustration in its own future Memory & Storage chapter (paging, virtual memory, caches) — this diagram only needs to make one thing stick: it's fast because it's temporary.
 
 > ✅ **Quick Check**
 >
