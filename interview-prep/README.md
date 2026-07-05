@@ -20,5 +20,6 @@ New topics are added here only once the corresponding handbook chapters exist.
 | Topic | Questions |
 |---|---|
 | [🐳 Docker](./docker/README.md) | Core Concepts, Scenario-Based, Troubleshooting, Production |
+| [🖥️ Computer Systems](./computer-systems/README.md) | Core Concepts, Scenario-Based, Troubleshooting |
 
 More topics (Kubernetes, Terraform, AWS, CI/CD, Python) will be added here as their handbook chapters are written.

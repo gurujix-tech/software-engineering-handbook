@@ -90,6 +90,7 @@ AWS • Docker • Kubernetes • Terraform • Helm • CI/CD & GitOps • Linu
 ```
 software-engineering-handbook/
 
+├── computer-science-fundamentals/
 ├── linux/
 ├── networking/
 ├── docker/
